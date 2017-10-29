@@ -1,44 +1,35 @@
-//============================================================================
-// Name        : StockServer.cpp
-// Author      : mrowacz@gmail.com
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
-//============================================================================
+#include <iostream>
 
-#include <iostream>
-#include <cstdint>
-#include <iostream>
-#include <vector>
+#include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
+
 #include <mongocxx/client.hpp>
-#include <mongocxx/stdx.hpp>
+#include <mongocxx/options/find.hpp>
+#include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 
-#include "crow.h"
-
-using bsoncxx::builder::stream::close_array;
-using bsoncxx::builder::stream::close_document;
 using bsoncxx::builder::stream::document;
-using bsoncxx::builder::stream::finalize;
-using bsoncxx::builder::stream::open_array;
 using bsoncxx::builder::stream::open_document;
+using bsoncxx::builder::stream::close_document;
+using bsoncxx::builder::stream::open_array;
+using bsoncxx::builder::stream::close_array;
+using bsoncxx::builder::stream::finalize;
 
-using namespace std;
+int main(int, char**) {
+    mongocxx::instance inst{};
+    mongocxx::client conn{mongocxx::uri{}};
 
-int main() {
-//    crow::SimpleApp app;
-//
-//    CROW_ROUTE(app, "/")([](){
-//        return "Hello world";
-//    });
-//
-//    app.port(18080).multithreaded().run();
-	mongocxx::client conn{};
+    auto db = conn["btc-stock-db"];
 
-	auto db = conn["test"];
-	auto index_spec = document{} << "cost" << "-1" << finalize;
-	db["shortestpaths"].create_index(index_spec.view(), {});
+    // Query for all the documents in a collection.
+    {
+        // @begin: cpp-query-all
+        auto cursor = db["btc-usd"].find({});
+        for (auto&& doc : cursor) {
+            std::cout << bsoncxx::to_json(doc) << std::endl;
+        }
+        // @end: cpp-query-all
+    }
 
     return 0;
 }

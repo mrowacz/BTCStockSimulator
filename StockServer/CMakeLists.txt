@@ -34,8 +34,8 @@ target_include_directories(StockServer PUBLIC
 message(${LIBMONGOCXX_INCLUDE_DIRS})
 target_link_libraries(StockServer      
         pthread
+        mongocxx
+        bsoncxx
         ${Boost_LIBRARIES}
-        ${LIBBSONCXX_LIBRARIES}
-        ${LIBMONGOCXX_LIBRARIES}
 )
 
